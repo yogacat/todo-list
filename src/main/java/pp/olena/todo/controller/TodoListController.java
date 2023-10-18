@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import pp.olena.todo.dto.CreateTask;
-import pp.olena.todo.dto.Task;
 import pp.olena.todo.dto.TaskFilter;
 import pp.olena.todo.dto.TaskId;
+import pp.olena.todo.dto.UpdateTask;
+import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.service.TaskService;
 import pp.olena.todo.validation.ValidUpdateTask;
 import java.util.List;
@@ -59,8 +60,8 @@ public class TodoListController {
     @PostMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<TaskId> createTask(@RequestBody @Valid @NotNull CreateTask task) {
-        TaskId taskId = taskService.createTask(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskId);
+        Long taskId = taskService.createTask(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new TaskId(taskId));
     }
 
     /**
@@ -69,10 +70,11 @@ public class TodoListController {
      * @param task {@link Task}
      * @return ResponseEntity
      */
-    @PutMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> updateTask(@RequestBody @ValidUpdateTask @NotNull ValidUpdateTask task) {
-        taskService.updateTask(task);
+    public ResponseEntity<?> updateTask(@PathVariable @NotBlank Long id,
+        @RequestBody @NotNull @ValidUpdateTask UpdateTask task) {
+        taskService.updateTask(id, task);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -81,7 +83,7 @@ public class TodoListController {
      * @param id Long id of the task to delete
      * @return ResponseEntity
      */
-    @DeleteMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteTask(@PathVariable @NotBlank Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
