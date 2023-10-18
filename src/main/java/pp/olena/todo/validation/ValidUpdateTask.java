@@ -11,14 +11,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Validates data that came in the rest interface before creating the task.
+ * Validates data that came in the rest interface before updating the task.
  */
 @Target({ElementType.PARAMETER, ANNOTATION_TYPE})
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = CreateTaskValidator.class)
-public @interface CreateTask {
-    String message() default "Task cannot be created, data is invalid.";
+@Constraint(validatedBy = UpdateTaskValidator.class)
+public @interface ValidUpdateTask {
+
+    String message() default "Task cannot be updated, either description or status must be present. Status can be done or not done.";
 
     Class<?>[] groups() default {};
 

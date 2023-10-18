@@ -1,5 +1,6 @@
 package pp.olena.todo.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import pp.olena.todo.dto.CreateTask;
 import pp.olena.todo.dto.Task;
 import pp.olena.todo.dto.TaskFilter;
 import pp.olena.todo.dto.TaskId;
 import pp.olena.todo.service.TaskService;
-import pp.olena.todo.validation.CreateTask;
-import pp.olena.todo.validation.UpdateTask;
+import pp.olena.todo.validation.ValidUpdateTask;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class TodoListController {
      */
     @PostMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<TaskId> createTask(@RequestBody @CreateTask @NotNull Task task) {
+    public ResponseEntity<TaskId> createTask(@RequestBody @Valid @NotNull CreateTask task) {
         TaskId taskId = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskId);
     }
@@ -70,7 +71,7 @@ public class TodoListController {
      */
     @PutMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> updateTask(@RequestBody @UpdateTask @NotNull Task task) {
+    public ResponseEntity<?> updateTask(@RequestBody @ValidUpdateTask @NotNull ValidUpdateTask task) {
         taskService.updateTask(task);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
