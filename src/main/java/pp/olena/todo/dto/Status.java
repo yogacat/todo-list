@@ -20,6 +20,7 @@ public enum Status {
                 return status;
             }
         }
+        //todo specific exception
         throw new RuntimeException("Status with the value " + value + " does not exist.");
     }
 }
