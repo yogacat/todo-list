@@ -2,3 +2,4 @@
 .java-version
 /.idea/*
 *.iml
+/target/
