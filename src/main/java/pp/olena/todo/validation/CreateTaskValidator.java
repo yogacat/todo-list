@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  *
  * todo specific messages instead of generic one
  */
-@Component
 public class CreateTaskValidator implements ConstraintValidator<ValidCreateTask, CreateTask> {
 
     @Override

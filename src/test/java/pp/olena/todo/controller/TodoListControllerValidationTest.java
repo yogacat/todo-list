@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pp.olena.todo.dto.CreateTask;
+import pp.olena.todo.dto.UpdateTask;
 import java.time.LocalDateTime;
 
 @ExtendWith(SpringExtension.class)
@@ -36,7 +37,7 @@ class TodoListControllerValidationTest {
     }
 
     @Test
-    void shouldThrowValidationExceptionWhenDueDateIsInThePast() {
+    void shouldThrowValidationExceptionWhenCreateTaskDueDateIsInThePast() {
         //given
         CreateTask createTask = new CreateTask("Description", LocalDateTime.now().minusDays(1));
 
@@ -48,11 +49,10 @@ class TodoListControllerValidationTest {
         assertThat(thrown.getMessage())
             .contains(
                 "createTask.task: Task cannot be created, description must be present and due date must be in the future if present.");
-
     }
 
     @Test
-    void shouldThrowValidationExceptionWhenDescriptionIsNull() {
+    void shouldThrowValidationExceptionWhenCreateTaskDescriptionIsNull() {
         //given
         CreateTask createTask = new CreateTask(null, null);
 
@@ -64,11 +64,10 @@ class TodoListControllerValidationTest {
         assertThat(thrown.getMessage())
             .contains(
                 "createTask.task: Task cannot be created, description must be present and due date must be in the future if present.");
-
     }
 
     @Test
-    void shouldThrowValidationExceptionWhenDescriptionIsEmpty() {
+    void shouldThrowValidationExceptionWhenCreateTaskDescriptionIsEmpty() {
         //given
         CreateTask createTask = new CreateTask("", null);
 
@@ -80,6 +79,62 @@ class TodoListControllerValidationTest {
         assertThat(thrown.getMessage())
             .contains(
                 "createTask.task: Task cannot be created, description must be present and due date must be in the future if present.");
+    }
 
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskIdIsNull() {
+        //given
+        UpdateTask updateTask = new UpdateTask("New Description", null);
+
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(null, updateTask));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.id: must not be null");
+    }
+
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskIsNull() {
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(1L, null));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
+    }
+
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskDescriptionIsNull() {
+        //given
+        UpdateTask updateTask = new UpdateTask(null, null);
+
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(1L, updateTask));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
+    }
+
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskDescriptionIsEmpty() {
+        //given
+        UpdateTask updateTask = new UpdateTask("", null);
+
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(1L, updateTask));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
     }
 }

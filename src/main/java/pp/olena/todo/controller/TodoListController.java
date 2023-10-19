@@ -75,8 +75,8 @@ public class TodoListController {
      */
     @PutMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> updateTask(@PathVariable @NotBlank Long id,
-        @RequestBody @NotNull @ValidUpdateTask UpdateTask task) {
+    public ResponseEntity<?> updateTask(@PathVariable @NotNull Long id,
+        @RequestBody @ValidUpdateTask UpdateTask task) {
         taskService.updateTask(id, task);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

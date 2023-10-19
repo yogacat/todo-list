@@ -13,7 +13,10 @@ public class UpdateTaskValidator implements ConstraintValidator<ValidUpdateTask,
 
     @Override
     public boolean isValid(UpdateTask task, ConstraintValidatorContext context) {
-        return !isBlank(task.description()) || isBlank(task.status()) && isValidStatus(task.status());
+        if (task == null) {
+            return false;
+        }
+        return !isBlank(task.description()) || isValidStatus(task.status());
     }
 
     private boolean isBlank(String value) {
@@ -21,6 +24,9 @@ public class UpdateTaskValidator implements ConstraintValidator<ValidUpdateTask,
     }
 
     private boolean isValidStatus(String statusValue) {
+        if (isBlank(statusValue)) {
+            return false;
+        }
         Status status = Status.fromString(statusValue);
         return Status.NOT_DONE.equals(status) || Status.DONE.equals(status);
     }
