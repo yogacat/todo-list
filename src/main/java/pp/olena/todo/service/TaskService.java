@@ -1,8 +1,10 @@
 package pp.olena.todo.service;
 
+import jakarta.persistence.criteria.Expression;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pp.olena.todo.dto.CreateTask;
 import pp.olena.todo.dto.Status;
@@ -14,6 +16,7 @@ import pp.olena.todo.exception.TaskUpdateForbiddenException;
 import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.persistance.repository.TaskRepository;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 
@@ -107,12 +110,23 @@ public class TaskService {
      * @return collection of {@link Task}
      */
     public List<Task> getAllByFilter(TaskFilter filter) {
-        Task taskExample = new Task();
-        taskExample.setStatus(filter.status());
-        //todo it's better to cut time here, but then an example might not work
-        taskExample.setDueTo(filter.dueTo());
+        Specification<Task> spec = Specification.where(null);
 
-        return taskRepository.findAll(Example.of(taskExample));
+        if (filter.status() != null) {
+            spec = spec.and((root, query, builder) -> builder.equal(root.get("status"), filter.status()));
+        }
+
+        if (filter.dueTo() != null) {
+            spec = spec.and((root, query, builder) -> {
+                Expression<LocalDateTime> truncatedDueTo = builder.function(
+                    "date_trunc", LocalDateTime.class, builder.literal("day"), root.get("dueTo")
+                );
+
+                return builder.equal(truncatedDueTo, filter.dueTo().truncatedTo(ChronoUnit.DAYS));
+            });
+        }
+
+        return taskRepository.findAll(spec);
     }
 
     private static String replacePlaceholder(String message, Long id) {
