@@ -1,7 +1,7 @@
 package pp.olena.todo.service;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import pp.olena.todo.dto.CreateTask;
@@ -26,6 +26,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
+    @Autowired
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
@@ -45,7 +46,8 @@ public class TaskService {
      * @param createTask {@link CreateTask}
      * @return Long id of the created task
      */
-    public Long createTask(@Valid @NotNull CreateTask createTask) {
+    @Transactional
+    public Long createTask(CreateTask createTask) {
         Task task = new Task();
         task.setDescription(createTask.description());
         task.setDueTo(createTask.dueTo());
@@ -59,6 +61,7 @@ public class TaskService {
      * @param id Long id of the task
      * @param updateTask {@link UpdateTask}
      */
+    @Transactional
     public void updateTask(Long id, UpdateTask updateTask) {
         Task task = taskRepository.findById(id)
             .orElseThrow(
@@ -81,6 +84,7 @@ public class TaskService {
      * Deletes a task if it was found.
      * @param id Long id of the task.
      */
+    @Transactional
     public void deleteTask(Long id) {
         Task task = taskRepository.findById(id)
             .orElseThrow(() -> new TaskNotFoundException(replacePlaceholder(ERROR_MSG_TASK_NOT_FOUND, id)));

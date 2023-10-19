@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +24,14 @@ import pp.olena.todo.dto.TaskId;
 import pp.olena.todo.dto.UpdateTask;
 import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.service.TaskService;
+import pp.olena.todo.validation.ValidCreateTask;
 import pp.olena.todo.validation.ValidUpdateTask;
 import java.util.List;
 
 /**
  * Controller for the API, allows to create/update/edit/delete and retrieve items.
  */
+@Validated
 @RestController
 @RequestMapping("/api")
 @Slf4j
@@ -59,7 +62,7 @@ public class TodoListController {
      */
     @PostMapping(value = "/tasks", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<TaskId> createTask(@RequestBody @Valid @NotNull CreateTask task) {
+    public ResponseEntity<TaskId> createTask(@RequestBody @ValidCreateTask CreateTask task) {
         Long taskId = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(new TaskId(taskId));
     }
