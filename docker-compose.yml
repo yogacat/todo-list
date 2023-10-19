@@ -8,6 +8,6 @@ services:
       POSTGRES_USER: olena
       POSTGRES_PASSWORD: ofcoursenot1234
     volumes:
-      - ./postgres_bowling_data:/var/lib/postgresql/data
+      - ./postgres_todo_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"

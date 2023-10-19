@@ -3,3 +3,4 @@
 /.idea/*
 *.iml
 /target/
+/postgres_todo_data/
