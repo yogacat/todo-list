@@ -8,12 +8,14 @@ import pp.olena.todo.dto.CreateTask;
 import pp.olena.todo.dto.Status;
 import pp.olena.todo.dto.TaskFilter;
 import pp.olena.todo.dto.UpdateTask;
+import pp.olena.todo.exception.NoChangesException;
 import pp.olena.todo.exception.TaskNotFoundException;
-import pp.olena.todo.exception.TaskUpdateForbidden;
+import pp.olena.todo.exception.TaskUpdateForbiddenException;
 import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.persistance.repository.TaskRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains business logic for the API. Performs permission checks, checks if entity exists before deleting/updating
@@ -66,18 +68,26 @@ public class TaskService {
         Task task = taskRepository.findById(id)
             .orElseThrow(
                 () -> new TaskNotFoundException(replacePlaceholder(ERROR_MSG_TASK_NOT_FOUND, id)));
-        if (isAllowedToUpdate(task)) {
-            if (updateTask.description() != null) {
-                task.setDescription(updateTask.description());
-            }
-            if (updateTask.status() != null) {
-                task.setStatus(updateTask.status());
-            }
-
-            taskRepository.save(task);
-        } else {
-            throw new TaskUpdateForbidden("Task is past due date and is not allowed to be updated.");
+        if (!isAllowedToUpdate(task)) {
+            throw new TaskUpdateForbiddenException("Task is past due date and is not allowed to be updated.");
         }
+        if (!hasChanges(task, updateTask)) {
+            throw new NoChangesException("Task was not updated, no changes detected for the id " + id + ".");
+        }
+
+        if (updateTask.description() != null) {
+            task.setDescription(updateTask.description());
+        }
+        if (updateTask.status() != null) {
+            task.setStatus(updateTask.status());
+        }
+
+        taskRepository.save(task);
+    }
+
+    private boolean hasChanges(Task task, UpdateTask updateTask) {
+        return Objects.nonNull(updateTask.description()) && !task.getDescription().equals(updateTask.description())
+            || Objects.nonNull(updateTask.status()) && !task.getStatus().equals(updateTask.status());
     }
 
     /**

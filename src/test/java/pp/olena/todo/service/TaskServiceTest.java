@@ -16,8 +16,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import pp.olena.todo.dto.CreateTask;
 import pp.olena.todo.dto.UpdateTask;
+import pp.olena.todo.exception.NoChangesException;
 import pp.olena.todo.exception.TaskNotFoundException;
-import pp.olena.todo.exception.TaskUpdateForbidden;
+import pp.olena.todo.exception.TaskUpdateForbiddenException;
 import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.persistance.repository.TaskRepository;
 import java.time.LocalDateTime;
@@ -122,7 +123,7 @@ class TaskServiceTest {
         UpdateTask updateTask = new UpdateTask("New Description", null);
 
         //when
-        TaskUpdateForbidden thrown = Assertions.assertThrows(TaskUpdateForbidden.class,
+        TaskUpdateForbiddenException thrown = Assertions.assertThrows(TaskUpdateForbiddenException.class,
             () -> taskService.updateTask(1L, updateTask));
 
         //then
@@ -138,7 +139,7 @@ class TaskServiceTest {
         UpdateTask updateTask = new UpdateTask("New Description", null);
 
         //when
-        TaskUpdateForbidden thrown = Assertions.assertThrows(TaskUpdateForbidden.class,
+        TaskUpdateForbiddenException thrown = Assertions.assertThrows(TaskUpdateForbiddenException.class,
             () -> taskService.updateTask(1L, updateTask));
 
         //then
@@ -147,7 +148,17 @@ class TaskServiceTest {
 
     @Test
     void shouldReturnExceptionWhenTaskToUpdateHasNotChanged() {
-        //todo update functionality
+        //given
+        Task task = new Task(1L, "Description", "not done", LocalDateTime.now(), null, null);
+        taskRepository.save(task);
+        UpdateTask updateTask = new UpdateTask("Description", null);
+
+        //when
+        NoChangesException thrown = Assertions.assertThrows(NoChangesException.class,
+            () -> taskService.updateTask(1L, updateTask));
+
+        //then
+        assertThat(thrown.getMessage()).contains("Task was not updated, no changes detected for the id 1.");
     }
 
     @Test
