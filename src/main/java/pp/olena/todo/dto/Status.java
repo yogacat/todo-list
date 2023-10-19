@@ -1,6 +1,7 @@
 package pp.olena.todo.dto;
 
 import lombok.Getter;
+import pp.olena.todo.exception.StatusNotFoundException;
 
 /**
  * Status of the task: not done, done, past due.
@@ -20,7 +21,7 @@ public enum Status {
                 return status;
             }
         }
-        //todo specific exception
-        throw new RuntimeException("Status with the value " + value + " does not exist.");
+
+        throw new StatusNotFoundException("Status with the value " + value + " does not exist.");
     }
 }

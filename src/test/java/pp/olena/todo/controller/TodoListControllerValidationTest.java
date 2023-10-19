@@ -137,4 +137,34 @@ class TodoListControllerValidationTest {
             .contains(
                 "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
     }
+
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskStatusIsInvalid() {
+        //given
+        UpdateTask updateTask = new UpdateTask("", "wrong status");
+
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(1L, updateTask));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
+    }
+
+    @Test
+    void shouldThrowValidationExceptionWhenUpdateTaskStatusIsNotAllowed() {
+        //given
+        UpdateTask updateTask = new UpdateTask("", "past due");
+
+        //when
+        ValidationException thrown = Assertions.assertThrows(ValidationException.class,
+            () -> controller.updateTask(1L, updateTask));
+
+        //then
+        assertThat(thrown.getMessage())
+            .contains(
+                "updateTask.task: Task cannot be updated, either description or status must be present. Status can be done or not done.");
+    }
 }
