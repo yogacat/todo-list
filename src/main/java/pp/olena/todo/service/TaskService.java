@@ -83,6 +83,11 @@ public class TaskService {
         }
         if (updateTask.status() != null) {
             task.setStatus(updateTask.status());
+            if (Status.DONE.getValue().equals(updateTask.status())) {
+                task.setDoneAt(LocalDateTime.now());
+            } else if (Status.NOT_DONE.getValue().equals(updateTask.status())) {
+                task.setDoneAt(null);
+            }
         }
 
         taskRepository.save(task);
