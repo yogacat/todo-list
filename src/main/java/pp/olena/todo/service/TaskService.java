@@ -115,6 +115,10 @@ public class TaskService {
      * @return collection of {@link Task}
      */
     public List<Task> getAllByFilter(TaskFilter filter) {
+        if (filter == null) {
+            return taskRepository.findAll();
+        }
+
         Specification<Task> spec = Specification.where(null);
 
         if (filter.status() != null) {
