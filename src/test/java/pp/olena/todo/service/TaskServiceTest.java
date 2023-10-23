@@ -178,6 +178,8 @@ class TaskServiceTest {
         assertTrue(optional.isPresent());
         Task updated = optional.get();
         assertEquals("New Description", updated.getDescription());
+        assertEquals(task.getDueTo(), updated.getDueTo());
+        assertNull(updated.getDoneAt());
     }
 
     @Test
@@ -217,8 +219,10 @@ class TaskServiceTest {
     @Test
     void shouldReturnAllTasksWhenEmptyFilterFields() {
         //given
-        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
-        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now());
+        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            null);
+        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            LocalDateTime.now());
         taskRepository.saveAll(List.of(task1, task2));
 
         //when
@@ -232,8 +236,10 @@ class TaskServiceTest {
     @Test
     void shouldReturnDoneWhenFound() {
         //given
-        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
-        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now());
+        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            null);
+        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            LocalDateTime.now());
         taskRepository.saveAll(List.of(task1, task2));
         TaskFilter filter = new TaskFilter("done", null);
 
@@ -251,8 +257,10 @@ class TaskServiceTest {
     @Test
     void shouldReturnNotDoneWhenFound() {
         //given
-        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
-        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now());
+        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            null);
+        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            LocalDateTime.now());
         taskRepository.saveAll(List.of(task1, task2));
         TaskFilter filter = new TaskFilter("not done", null);
 
@@ -270,8 +278,10 @@ class TaskServiceTest {
     @Test
     void shouldReturnDueToTodayWhenTimeIsNotEqual() {
         //given
-        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
-        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(2), LocalDateTime.now());
+        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            null);
+        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(2),
+            LocalDateTime.now());
         taskRepository.saveAll(List.of(task1, task2));
         TaskFilter filter = new TaskFilter(null, LocalDateTime.now().plusDays(1).plusMinutes(5));
 
@@ -289,9 +299,12 @@ class TaskServiceTest {
     @Test
     void shouldReturnOneWhenAllFilterFieldsUsed() {
         //given
-        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
-        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(2), LocalDateTime.now());
-        Task task3 = new Task(3L, "Description3", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now());
+        Task task1 = new Task(1L, "Description1", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            null);
+        Task task2 = new Task(2L, "Description2", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(2),
+            LocalDateTime.now());
+        Task task3 = new Task(3L, "Description3", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+            LocalDateTime.now());
         taskRepository.saveAll(List.of(task1, task2, task3));
         TaskFilter filter = new TaskFilter("done", LocalDateTime.now().plusDays(1).plusMinutes(5));
 
@@ -304,5 +317,41 @@ class TaskServiceTest {
         Task foundTask = tasks.get(0);
         assertEquals("Description3", foundTask.getDescription());
         assertEquals("done", foundTask.getStatus());
+    }
+
+    @Test
+    void shouldUpdateDoneAtWhenUpdateStatusSetToDone() {
+        //given
+        Task task = new Task(1L, "Description", "not done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), null);
+        taskRepository.save(task);
+        UpdateTask updateTask = new UpdateTask(null, "done");
+
+        //when
+        taskService.updateTask(1L, updateTask);
+
+        //then
+        Optional<Task> optional = taskRepository.findById(1L);
+        assertTrue(optional.isPresent());
+        Task updated = optional.get();
+        assertEquals("Description", updated.getDescription());
+        assertNotNull(updated.getDoneAt());
+    }
+
+    @Test
+    void shouldUpdateDoneAtToNullWhenUpdateStatusSetToNotDone() {
+        //given
+        Task task = new Task(1L, "Description", "done", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now().minusDays(1));
+        taskRepository.save(task);
+        UpdateTask updateTask = new UpdateTask(null, "not done");
+
+        //when
+        taskService.updateTask(1L, updateTask);
+
+        //then
+        Optional<Task> optional = taskRepository.findById(1L);
+        assertTrue(optional.isPresent());
+        Task updated = optional.get();
+        assertEquals("Description", updated.getDescription());
+        assertNull(updated.getDoneAt());
     }
 }
