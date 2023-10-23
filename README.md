@@ -25,6 +25,9 @@ more effort.
 Most of the functionality is covered by tests in the service, that is why I am doing very minimalistic testing of the
 controller.
 
+Please be aware that the application starts on port `8066` because I have other services running on `8080` and I would
+like to avoid conflicts on my machine. The database also does not use the standard port for the same reason.
+
 ## Tech stack
 
 - Java 17
@@ -56,4 +59,4 @@ executing `docker compose up` command in the project directory.
 After this build the project by running`mvn clean install` command.
 To build the docker image run`docker build -t todo-list .` in the project directory.
 
-Run the API by executing `docker run -e DB_HOST=host.docker.internal -p 8086:8086 todo-list` command.
+Run the API by executing `docker run -e DB_HOST=host.docker.internal -p 8066:8066 todo-list` command.
