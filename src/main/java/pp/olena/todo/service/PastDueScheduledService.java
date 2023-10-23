@@ -2,8 +2,10 @@ package pp.olena.todo.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import pp.olena.todo.condition.DisableSchedulingCondition;
 import pp.olena.todo.dto.Status;
 import pp.olena.todo.persistance.entity.Task;
 import pp.olena.todo.persistance.repository.TaskRepository;
@@ -25,6 +27,7 @@ public class PastDueScheduledService {
     }
 
     @Scheduled(fixedDelayString = "${todo.scheduled.update.pastDueInterval.milliseconds}")
+    @Conditional(DisableSchedulingCondition.class)
     public void updatePastDueTasks() {
         List<Task> pastDueTasks = taskRepository.findAllWithDueToBeforeNowAndStatusNotDone();
         if (!pastDueTasks.isEmpty()) {

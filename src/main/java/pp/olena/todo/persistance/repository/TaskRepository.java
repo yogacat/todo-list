@@ -9,6 +9,6 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAll(Specification<Task> spec);
 
-    @Query("SELECT t FROM Task t WHERE t.status <> 'done' AND t.dueTo < CURRENT_TIMESTAMP")
+    @Query("SELECT t FROM Task t WHERE t.status = 'not done' AND t.dueTo < CURRENT_TIMESTAMP")
     List<Task> findAllWithDueToBeforeNowAndStatusNotDone();
 }
