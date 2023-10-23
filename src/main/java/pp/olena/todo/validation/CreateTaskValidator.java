@@ -2,7 +2,6 @@ package pp.olena.todo.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.springframework.stereotype.Component;
 import pp.olena.todo.dto.CreateTask;
 import java.time.LocalDateTime;
 
