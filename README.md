@@ -17,6 +17,14 @@ when I need to find tasks that must be done by the specific date. This provides 
 potentially extend the filter by providing more filtering options. I am aware that Entities contain date with time, thus
 time will be trimmed when searching using the filter (for example due to "today").
 
+There is an issue that I will not fix now: if the user would like to find all the tasks due to "today", for example, by
+7pm the filter will not return all the entities correctly due to the trimming. I am not going to fix it because
+filtering in such a way was an improvisation (to make an endpoint expandable) rather than a requirement and will take
+more effort.
+
+Most of the functionality is covered by tests in the service, that is why I am doing very minimalistic testing of the
+controller.
+
 ## Tech stack
 
 - Java 17
