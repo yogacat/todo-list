@@ -49,7 +49,7 @@ public class TodoListController {
      * @return ResponseEntity
      */
     @GetMapping(value = "/tasks/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Task> getTask(@PathVariable @NotBlank Long id) {
+    public ResponseEntity<Task> getTask(@PathVariable @NotNull Long id) {
         Task task = taskService.getTaskById(id);
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
@@ -86,7 +86,7 @@ public class TodoListController {
      * @return ResponseEntity
      */
     @DeleteMapping(value = "/tasks/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteTask(@PathVariable @NotBlank Long id) {
+    public ResponseEntity<?> deleteTask(@PathVariable @NotNull Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -97,7 +97,7 @@ public class TodoListController {
      * @return ResponseEntity
      */
     @GetMapping(value = "/tasks/filter/{filter}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Task>> getAllTasks(@PathVariable @NotNull TaskFilter filter) {
+    public ResponseEntity<List<Task>> getAllTasks(@PathVariable TaskFilter filter) {
         List<Task> tasks = taskService.getAllByFilter(filter);
         return ResponseEntity.status(HttpStatus.OK).body(tasks);
     }
