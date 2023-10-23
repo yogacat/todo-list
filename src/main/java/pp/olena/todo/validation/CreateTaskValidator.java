@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 /**
  * Validates {@link CreateTask}, checks that description is present and due date is in the future if present.
  *
- * todo specific messages instead of generic one
+ * <p>Will not do: collecting and returning specific exceptions for each issue.</p>
  */
 public class CreateTaskValidator implements ConstraintValidator<ValidCreateTask, CreateTask> {
 

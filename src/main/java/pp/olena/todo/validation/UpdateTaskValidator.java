@@ -10,6 +10,8 @@ import pp.olena.todo.exception.StatusNotFoundException;
 /**
  * Makes sure that any of the fields, that can be updated, is present. Fields that can be updated: description, status.
  * Does not validate if the task is past due date, only validates that any of the mandatory fields is present.
+ *
+ *  <p>Will not do: collecting and returning specific exceptions for each issue.</p>
  */
 @Slf4j
 public class UpdateTaskValidator implements ConstraintValidator<ValidUpdateTask, UpdateTask> {
